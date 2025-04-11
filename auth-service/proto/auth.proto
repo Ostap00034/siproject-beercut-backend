@@ -1,29 +1,53 @@
-// proto/auth.proto
 syntax = "proto3";
 
 package auth;
 
 option go_package = "github.com/Ostap00034/siproject-beercut-backend/auth-service/proto;auth";
 
+import "google/api/annotations.proto";
+
 service AuthService {
   // Регистрация нового пользователя
-  rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
+  rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/register"
+      body: "*"
+    };
+  }
   // Аутентификация (вход) по email и паролю
-  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/login"
+      body: "*"
+    };
+  }
   // Создание токена (при необходимости)
-  rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
+  rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/createToken"
+      body: "*"
+    };
+  }
   // Валидация токена
-  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/validateToken"
+      body: "*"
+    };
+  }
   // Удаление токена
-  rpc DeleteToken(DeleteTokenRequest) returns (DeleteTokenResponse);
+  rpc DeleteToken(DeleteTokenRequest) returns (DeleteTokenResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/deleteToken"
+      body: "*"
+    };
+  }
 }
 
 message RegisterUserRequest {
   string email = 1;
   string password = 2;
   string full_name = 3;
-  // Значение role должно соответствовать одному из:
-  // DIRECTOR, ADMIN, RESTORER, EMPLOYEE.
   string role = 4;
 }
 

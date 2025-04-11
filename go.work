@@ -1,0 +1,12 @@
+go 1.23.2
+
+use (
+	./auth-service
+	./author-service
+	./exhibition-service
+	./genre-service
+	./movement-history-service
+	./picture-service
+	./user-service
+	./api-gateway
+)

@@ -5,7 +5,6 @@ import (
 	"context"
 	"log"
 
-	"entgo.io/ent/dialect"
 	"github.com/Ostap00034/siproject-beercut-backend/auth-service/ent"
 	_ "github.com/lib/pq" // подключаем драйвер PostgreSQL
 )
