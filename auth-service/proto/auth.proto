@@ -1,0 +1,73 @@
+// proto/auth.proto
+syntax = "proto3";
+
+package auth;
+
+option go_package = "github.com/Ostap00034/siproject-beercut-backend/auth-service/proto;auth";
+
+service AuthService {
+  // Регистрация нового пользователя
+  rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
+  // Аутентификация (вход) по email и паролю
+  rpc Login(LoginRequest) returns (LoginResponse);
+  // Создание токена (при необходимости)
+  rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
+  // Валидация токена
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+  // Удаление токена
+  rpc DeleteToken(DeleteTokenRequest) returns (DeleteTokenResponse);
+}
+
+message RegisterUserRequest {
+  string email = 1;
+  string password = 2;
+  string full_name = 3;
+  // Значение role должно соответствовать одному из:
+  // DIRECTOR, ADMIN, RESTORER, EMPLOYEE.
+  string role = 4;
+}
+
+message RegisterUserResponse {
+  string user_id = 1;
+  string message = 2;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+  string expires_at = 2;
+  string user_id = 3;
+  string role = 4;
+}
+
+message CreateTokenRequest {
+  string user_id = 1;
+  string role = 2;
+}
+
+message CreateTokenResponse {
+  string token = 1;
+  string expires_at = 2;
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool valid = 1;
+  string user_id = 2;
+  string role = 3;
+}
+
+message DeleteTokenRequest {
+  string token = 1;
+}
+
+message DeleteTokenResponse {
+  bool success = 1;
+}

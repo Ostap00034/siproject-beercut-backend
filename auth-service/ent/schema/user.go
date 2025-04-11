@@ -1,3 +1,4 @@
+// ent/schema/user.go
 package schema
 
 import (
@@ -16,10 +17,14 @@ type User struct {
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
+		// Поле email, уникальное и обязательное.
 		field.String("email").Unique(),
 		field.String("password_hash"),
 		field.String("full_name"),
-		field.String("role"),
+		// Определяем поле role как enum: допустимые значения — DIRECTOR, ADMIN, RESTORER, EMPLOYEE.
+		field.Enum("role").
+			Values("DIRECTOR", "ADMIN", "RESTORER", "EMPLOYEE").
+			Default("EMPLOYEE"),
 		field.Time("created_at").Default(time.Now),
 	}
 }
