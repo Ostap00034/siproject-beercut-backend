@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "github.com/Ostap00034/siproject-beercut-backend/user-service/proto;user";
+
+service UserService {
+  // Создание пользователя
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  // Получение данных пользователя по ID
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  // Обновление данных пользователя
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+  // Получение списка пользователей
+  rpc GetAllUsers(GetAllUsersRequest) returns (GetAllUsersResponse);
+  // Получение данных пользователя по email (для Auth Service)
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (GetUserResponse);
+}
+
+message CreateUserRequest {
+  string email = 1;
+  string full_name = 2;
+  string role = 3;
+  string password = 4;
+}
+
+message CreateUserResponse {
+  string user_id = 1;
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message GetUserResponse {
+  UserData user = 1;
+}
+
+message UpdateUserRequest {
+  string user_id = 1;
+  string email = 2;
+  string full_name = 3;
+  string role = 4;
+  string password = 5;
+}
+
+message UpdateUserResponse {
+  UserData user = 1;
+}
+
+message GetAllUsersRequest {}
+
+message GetAllUsersResponse {
+  repeated UserData users = 1;
+}
+
+message GetUserByEmailRequest {
+  string email = 1;
+}
+
+message UserData {
+  string id = 1;
+  string email = 2;
+  string full_name = 3;
+  string role = 4;
+  string password_hash = 5;
+}
+
+message ErrorResponse {
+  string message = 1;
+  map<string, string> errors = 2;
+}
