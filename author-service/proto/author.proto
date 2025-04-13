@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package author;
+
+option go_package = "github.com/Ostap00034/siproject-beercut-backend/author-service/proto;author";
+
+service AuthorService {
+  rpc CreateAuthor (CreateAuthorRequest) returns (CreateAuthorResponse);
+  rpc GetAll(GetAllRequest) returns (GetAllResponse);
+  rpc GetAuthor(GetAuthorRequest) returns (GetAuthorResponse);
+  rpc UpdateAuthor(UpdateAuthorRequest) returns (UpdateAuthorResponse);
+  rpc DeleteAuthor(DeleteAuthorRequest) returns (DeleteAuthorResponse);
+}
+
+message AuthorData {
+  string id = 1;
+  string full_name = 2;
+  string date_of_birth = 3;
+  string date_of_death = 4;
+  string created_at = 5;
+}
+
+message GetAllRequest {}
+
+message GetAllResponse {
+  repeated AuthorData authors = 1;
+}
+
+message GetAuthorRequest {
+  string author_id = 1;
+}
+
+message GetAuthorResponse {
+  AuthorData author = 1;
+}
+
+message CreateAuthorRequest {
+  string full_name = 1;
+  string date_of_birth = 2;
+  string date_of_death = 3; // Поле необязательно, если значение не установлено, оно будет пустым.
+}
+
+message CreateAuthorResponse {
+  AuthorData author = 1;
+  string message = 2; // Рекомендуется "Автор успешно создан"
+}
+
+message UpdateAuthorRequest {
+  string author_id = 1;
+  string full_name = 2;
+  string date_of_birth = 3;
+  string date_of_death = 4;
+}
+
+message UpdateAuthorResponse {
+  AuthorData author = 1;
+}
+
+message DeleteAuthorRequest {
+  string author_id = 1;
+}
+
+message DeleteAuthorResponse {
+  string message = 1;
+}
+
+message ErrorResponse {
+  string message = 1;
+  map<string, string> errors = 2;
+}
