@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/Ostap00034/siproject-beercut-backend/auth-service/ent/predicate"
 	"github.com/Ostap00034/siproject-beercut-backend/auth-service/ent/token"
-	"github.com/Ostap00034/siproject-beercut-backend/auth-service/ent/user"
 )
 
 // TokenUpdate is the builder for updating Token entities.
@@ -43,16 +42,16 @@ func (tu *TokenUpdate) SetNillableToken(s *string) *TokenUpdate {
 	return tu
 }
 
-// SetRole sets the "role" field.
-func (tu *TokenUpdate) SetRole(s string) *TokenUpdate {
-	tu.mutation.SetRole(s)
+// SetUserID sets the "user_id" field.
+func (tu *TokenUpdate) SetUserID(s string) *TokenUpdate {
+	tu.mutation.SetUserID(s)
 	return tu
 }
 
-// SetNillableRole sets the "role" field if the given value is not nil.
-func (tu *TokenUpdate) SetNillableRole(s *string) *TokenUpdate {
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (tu *TokenUpdate) SetNillableUserID(s *string) *TokenUpdate {
 	if s != nil {
-		tu.SetRole(*s)
+		tu.SetUserID(*s)
 	}
 	return tu
 }
@@ -85,26 +84,9 @@ func (tu *TokenUpdate) SetNillableCreatedAt(t *time.Time) *TokenUpdate {
 	return tu
 }
 
-// SetUserID sets the "user" edge to the User entity by ID.
-func (tu *TokenUpdate) SetUserID(id int) *TokenUpdate {
-	tu.mutation.SetUserID(id)
-	return tu
-}
-
-// SetUser sets the "user" edge to the User entity.
-func (tu *TokenUpdate) SetUser(u *User) *TokenUpdate {
-	return tu.SetUserID(u.ID)
-}
-
 // Mutation returns the TokenMutation object of the builder.
 func (tu *TokenUpdate) Mutation() *TokenMutation {
 	return tu.mutation
-}
-
-// ClearUser clears the "user" edge to the User entity.
-func (tu *TokenUpdate) ClearUser() *TokenUpdate {
-	tu.mutation.ClearUser()
-	return tu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -134,18 +116,7 @@ func (tu *TokenUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (tu *TokenUpdate) check() error {
-	if tu.mutation.UserCleared() && len(tu.mutation.UserIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Token.user"`)
-	}
-	return nil
-}
-
 func (tu *TokenUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := tu.check(); err != nil {
-		return n, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(token.Table, token.Columns, sqlgraph.NewFieldSpec(token.FieldID, field.TypeInt))
 	if ps := tu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -157,43 +128,14 @@ func (tu *TokenUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := tu.mutation.Token(); ok {
 		_spec.SetField(token.FieldToken, field.TypeString, value)
 	}
-	if value, ok := tu.mutation.Role(); ok {
-		_spec.SetField(token.FieldRole, field.TypeString, value)
+	if value, ok := tu.mutation.UserID(); ok {
+		_spec.SetField(token.FieldUserID, field.TypeString, value)
 	}
 	if value, ok := tu.mutation.ExpiresAt(); ok {
 		_spec.SetField(token.FieldExpiresAt, field.TypeTime, value)
 	}
 	if value, ok := tu.mutation.CreatedAt(); ok {
 		_spec.SetField(token.FieldCreatedAt, field.TypeTime, value)
-	}
-	if tu.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   token.UserTable,
-			Columns: []string{token.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tu.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   token.UserTable,
-			Columns: []string{token.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -229,16 +171,16 @@ func (tuo *TokenUpdateOne) SetNillableToken(s *string) *TokenUpdateOne {
 	return tuo
 }
 
-// SetRole sets the "role" field.
-func (tuo *TokenUpdateOne) SetRole(s string) *TokenUpdateOne {
-	tuo.mutation.SetRole(s)
+// SetUserID sets the "user_id" field.
+func (tuo *TokenUpdateOne) SetUserID(s string) *TokenUpdateOne {
+	tuo.mutation.SetUserID(s)
 	return tuo
 }
 
-// SetNillableRole sets the "role" field if the given value is not nil.
-func (tuo *TokenUpdateOne) SetNillableRole(s *string) *TokenUpdateOne {
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (tuo *TokenUpdateOne) SetNillableUserID(s *string) *TokenUpdateOne {
 	if s != nil {
-		tuo.SetRole(*s)
+		tuo.SetUserID(*s)
 	}
 	return tuo
 }
@@ -271,26 +213,9 @@ func (tuo *TokenUpdateOne) SetNillableCreatedAt(t *time.Time) *TokenUpdateOne {
 	return tuo
 }
 
-// SetUserID sets the "user" edge to the User entity by ID.
-func (tuo *TokenUpdateOne) SetUserID(id int) *TokenUpdateOne {
-	tuo.mutation.SetUserID(id)
-	return tuo
-}
-
-// SetUser sets the "user" edge to the User entity.
-func (tuo *TokenUpdateOne) SetUser(u *User) *TokenUpdateOne {
-	return tuo.SetUserID(u.ID)
-}
-
 // Mutation returns the TokenMutation object of the builder.
 func (tuo *TokenUpdateOne) Mutation() *TokenMutation {
 	return tuo.mutation
-}
-
-// ClearUser clears the "user" edge to the User entity.
-func (tuo *TokenUpdateOne) ClearUser() *TokenUpdateOne {
-	tuo.mutation.ClearUser()
-	return tuo
 }
 
 // Where appends a list predicates to the TokenUpdate builder.
@@ -333,18 +258,7 @@ func (tuo *TokenUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (tuo *TokenUpdateOne) check() error {
-	if tuo.mutation.UserCleared() && len(tuo.mutation.UserIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Token.user"`)
-	}
-	return nil
-}
-
 func (tuo *TokenUpdateOne) sqlSave(ctx context.Context) (_node *Token, err error) {
-	if err := tuo.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(token.Table, token.Columns, sqlgraph.NewFieldSpec(token.FieldID, field.TypeInt))
 	id, ok := tuo.mutation.ID()
 	if !ok {
@@ -373,43 +287,14 @@ func (tuo *TokenUpdateOne) sqlSave(ctx context.Context) (_node *Token, err error
 	if value, ok := tuo.mutation.Token(); ok {
 		_spec.SetField(token.FieldToken, field.TypeString, value)
 	}
-	if value, ok := tuo.mutation.Role(); ok {
-		_spec.SetField(token.FieldRole, field.TypeString, value)
+	if value, ok := tuo.mutation.UserID(); ok {
+		_spec.SetField(token.FieldUserID, field.TypeString, value)
 	}
 	if value, ok := tuo.mutation.ExpiresAt(); ok {
 		_spec.SetField(token.FieldExpiresAt, field.TypeTime, value)
 	}
 	if value, ok := tuo.mutation.CreatedAt(); ok {
 		_spec.SetField(token.FieldCreatedAt, field.TypeTime, value)
-	}
-	if tuo.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   token.UserTable,
-			Columns: []string{token.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tuo.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   token.UserTable,
-			Columns: []string{token.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Token{config: tuo.config}
 	_spec.Assign = _node.assignValues

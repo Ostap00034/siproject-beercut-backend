@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package exhibition;
+
+option go_package = "github.com/Ostap00034/siproject-beercut-backend/exhibition-service/proto;exhibition";
+
+
+
+service ExhibitionService {
+  rpc CreateExhibition (CreateExhibitionRequest) returns (CreateExhibitionResponse);
+  rpc GetAll(GetAllRequest) returns (GetAllResponse);
+  rpc GetExhibition(GetExhibitionRequest) returns (GetExhibitionResponse);
+  rpc UpdateExhibition(UpdateExhibitionRequest) returns (UpdateExhibitionResponse);
+  rpc DeleteExhibition(DeleteExhibitionRequest) returns (DeleteExhibitionResponse);
+}
+
+message GenreData {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string created_at = 4;
+}
+
+message AuthorData {
+  string id = 1;
+  string full_name = 2;
+  string date_of_birth = 3;
+  string date_of_death = 4;
+  string created_at = 5;
+}
+
+
+message PictureData {
+  string id = 1;
+  string name = 2;
+  string date_of_painting = 3;
+  repeated string genres_ids = 4;
+  repeated string authors_ids = 5;
+  repeated AuthorData authors = 6;
+  repeated GenreData genres = 7;
+  string exhibition_id = 8;
+  double cost = 9;
+  string location = 10;
+  string created_at = 11;
+}
+
+message ExhibitionData {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  repeated string pictures_ids = 4;
+  repeated PictureData pictures = 5;
+  string status = 6;
+  string created_at = 7;
+}
+
+message GetAllRequest {
+  int32 page_number = 1;
+  int32 page_size = 2; 
+}
+
+message GetAllResponse {
+  repeated ExhibitionData exhibitions = 1;
+  int32 total = 2;
+  int32 total_pages = 3;
+}
+
+message GetExhibitionRequest {
+  string exhibition_id = 1;
+}
+
+message GetExhibitionResponse {
+  ExhibitionData exhibition = 1;
+}
+
+message CreateExhibitionRequest {
+  string name = 1;
+  string description = 2;
+  repeated string pictures_ids = 3;
+  string status = 4;
+}
+
+message CreateExhibitionResponse {
+  ExhibitionData exhibition = 1;
+  string message = 2;
+}
+
+message UpdateExhibitionRequest {
+  string exhibition_id = 1;
+  string name = 2;
+  string description = 3;
+  repeated string pictures_ids = 4;
+  string status = 5;
+  string user_id = 6;
+}
+
+message UpdateExhibitionResponse {
+  ExhibitionData exhibition = 1;
+}
+
+message DeleteExhibitionRequest {
+  string exhibition_id = 1;
+}
+
+message DeleteExhibitionResponse {
+  string message = 1;
+}
+
+message ErrorResponse {
+  string message = 1;
+  map<string, string> errors = 2;
+}

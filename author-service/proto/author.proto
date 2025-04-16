@@ -20,10 +20,15 @@ message AuthorData {
   string created_at = 5;
 }
 
-message GetAllRequest {}
+message GetAllRequest {
+  int32 page_number = 1;
+  int32 page_size = 2; 
+}
 
 message GetAllResponse {
   repeated AuthorData authors = 1;
+  int32 total = 2;
+  int32 total_pages = 3;
 }
 
 message GetAuthorRequest {

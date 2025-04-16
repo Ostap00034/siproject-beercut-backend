@@ -10,7 +10,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/Ostap00034/siproject-beercut-backend/auth-service/ent/token"
-	"github.com/Ostap00034/siproject-beercut-backend/auth-service/ent/user"
 )
 
 // Token is the model entity for the Token schema.
@@ -20,37 +19,13 @@ type Token struct {
 	ID int `json:"id,omitempty"`
 	// Token holds the value of the "token" field.
 	Token string `json:"token,omitempty"`
-	// Role holds the value of the "role" field.
-	Role string `json:"role,omitempty"`
+	// UserID holds the value of the "user_id" field.
+	UserID string `json:"user_id,omitempty"`
 	// ExpiresAt holds the value of the "expires_at" field.
 	ExpiresAt time.Time `json:"expires_at,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the TokenQuery when eager-loading is set.
-	Edges        TokenEdges `json:"edges"`
-	user_tokens  *int
+	CreatedAt    time.Time `json:"created_at,omitempty"`
 	selectValues sql.SelectValues
-}
-
-// TokenEdges holds the relations/edges for other nodes in the graph.
-type TokenEdges struct {
-	// User holds the value of the user edge.
-	User *User `json:"user,omitempty"`
-	// loadedTypes holds the information for reporting if a
-	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
-}
-
-// UserOrErr returns the User value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e TokenEdges) UserOrErr() (*User, error) {
-	if e.User != nil {
-		return e.User, nil
-	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: user.Label}
-	}
-	return nil, &NotLoadedError{edge: "user"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -60,12 +35,10 @@ func (*Token) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case token.FieldID:
 			values[i] = new(sql.NullInt64)
-		case token.FieldToken, token.FieldRole:
+		case token.FieldToken, token.FieldUserID:
 			values[i] = new(sql.NullString)
 		case token.FieldExpiresAt, token.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
-		case token.ForeignKeys[0]: // user_tokens
-			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -93,11 +66,11 @@ func (t *Token) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				t.Token = value.String
 			}
-		case token.FieldRole:
+		case token.FieldUserID:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field role", values[i])
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				t.Role = value.String
+				t.UserID = value.String
 			}
 		case token.FieldExpiresAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -111,13 +84,6 @@ func (t *Token) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				t.CreatedAt = value.Time
 			}
-		case token.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_tokens", value)
-			} else if value.Valid {
-				t.user_tokens = new(int)
-				*t.user_tokens = int(value.Int64)
-			}
 		default:
 			t.selectValues.Set(columns[i], values[i])
 		}
@@ -129,11 +95,6 @@ func (t *Token) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (t *Token) Value(name string) (ent.Value, error) {
 	return t.selectValues.Get(name)
-}
-
-// QueryUser queries the "user" edge of the Token entity.
-func (t *Token) QueryUser() *UserQuery {
-	return NewTokenClient(t.config).QueryUser(t)
 }
 
 // Update returns a builder for updating this Token.
@@ -162,8 +123,8 @@ func (t *Token) String() string {
 	builder.WriteString("token=")
 	builder.WriteString(t.Token)
 	builder.WriteString(", ")
-	builder.WriteString("role=")
-	builder.WriteString(t.Role)
+	builder.WriteString("user_id=")
+	builder.WriteString(t.UserID)
 	builder.WriteString(", ")
 	builder.WriteString("expires_at=")
 	builder.WriteString(t.ExpiresAt.Format(time.ANSIC))

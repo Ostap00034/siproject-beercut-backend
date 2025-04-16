@@ -40,7 +40,7 @@ func (s *authorServer) GetAuthor(ctx context.Context, req *authorpb.GetAuthorReq
 			Id:          strconv.Itoa(a.ID),
 			FullName:    a.FullName,
 			DateOfBirth: a.DateOfBirth,
-			DateOfDeath: a.DateOfDeath, // Если поле не установлено, оно может быть пустым
+			DateOfDeath: a.DateOfDeath,
 			CreatedAt:   a.CreatedAt.String(),
 		},
 	}, nil
@@ -76,13 +76,15 @@ func (s *authorServer) CreateAuthor(ctx context.Context, req *authorpb.CreateAut
 		SetFullName(req.GetFullName()).
 		SetDateOfBirth(req.GetDateOfBirth())
 
-	// Если дата смерти передана (не пустая строка), устанавливаем её.
 	if strings.TrimSpace(req.GetDateOfDeath()) != "" {
 		creator = creator.SetDateOfDeath(req.GetDateOfDeath())
 	}
 
 	a, err := creator.Save(ctx)
 	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+			return nil, status.Errorf(codes.InvalidArgument, "Автор с таким ФИО уже существует")
+		}
 		return nil, status.Errorf(codes.Internal, "Ошибка создания автора: %v", err)
 	}
 
@@ -100,10 +102,28 @@ func (s *authorServer) CreateAuthor(ctx context.Context, req *authorpb.CreateAut
 
 // GetAll возвращает список всех авторов.
 func (s *authorServer) GetAll(ctx context.Context, req *authorpb.GetAllRequest) (*authorpb.GetAllResponse, error) {
-	authors, err := s.db.Author.Query().All(ctx)
+	pageNumber := req.GetPageNumber()
+	pageSize := req.GetPageSize()
+	if pageNumber <= 0 {
+		pageNumber = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10 // значение по умолчанию
+	}
+	offset := (pageNumber - 1) * pageSize
+
+	authors, err := s.db.Author.Query().Offset(int(offset)).Limit(int(pageSize)).All(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Ошибка получения авторов: %v", err)
 	}
+
+	total, err := s.db.Author.Query().Count(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Ошибка получения общего количества авторов: %v", err)
+	}
+
+	// Вычисляем количество страниц (округляем в большую сторону).
+	totalPages := (total + int(pageSize) - 1) / int(pageSize)
 
 	var authorsList []*authorpb.AuthorData
 	for _, a := range authors {
@@ -117,11 +137,14 @@ func (s *authorServer) GetAll(ctx context.Context, req *authorpb.GetAllRequest) 
 	}
 
 	return &authorpb.GetAllResponse{
-		Authors: authorsList,
+		Authors:    authorsList,
+		Total:      int32(total),
+		TotalPages: int32(totalPages),
 	}, nil
 }
 
 // UpdateAuthor обновляет данные автора. Если поле DateOfDeath передано, оно обновляется, иначе оставляется прежним.
+// При обновлении ФИО проверяется уникальность, и если такое ФИО уже существует, возвращается сообщение "Автор с таким именем уже существует".
 func (s *authorServer) UpdateAuthor(ctx context.Context, req *authorpb.UpdateAuthorRequest) (*authorpb.UpdateAuthorResponse, error) {
 	id, err := strconv.Atoi(req.GetAuthorId())
 	if err != nil {
@@ -137,6 +160,9 @@ func (s *authorServer) UpdateAuthor(ctx context.Context, req *authorpb.UpdateAut
 	if req.GetFullName() != "" {
 		a, err = a.Update().SetFullName(req.GetFullName()).Save(ctx)
 		if err != nil {
+			if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+				return nil, status.Errorf(codes.InvalidArgument, "Автор с таким ФИО уже существует")
+			}
 			return nil, status.Errorf(codes.Internal, "Ошибка обновления ФИО: %v", err)
 		}
 	}
@@ -147,7 +173,7 @@ func (s *authorServer) UpdateAuthor(ctx context.Context, req *authorpb.UpdateAut
 			return nil, status.Errorf(codes.Internal, "Ошибка обновления даты рождения: %v", err)
 		}
 	}
-	// Обновляем дату смерти, если передана (иначе не меняем текущее значение).
+	// Обновляем дату смерти, если передана (иначе оставляем текущее значение).
 	if req.GetDateOfDeath() != "" {
 		a, err = a.Update().SetDateOfDeath(req.GetDateOfDeath()).Save(ctx)
 		if err != nil {

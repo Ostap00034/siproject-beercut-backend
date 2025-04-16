@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // AuthHandler содержит gRPC-клиент для сервиса аутентификации.
@@ -56,7 +57,18 @@ func (h *AuthHandler) RegisterHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	// Используем кастомный маршалер для сериализации ответа с пустыми полями
+	marshaler := protojson.MarshalOptions{
+		EmitUnpopulated: true,
+	}
+	jsonData, err := marshaler.Marshal(resp)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	// Отправляем сформированный JSON напрямую
+	c.Data(http.StatusOK, "application/json", jsonData)
 }
 
 // LoginHandler обрабатывает запрос на вход (авторизацию) пользователя.
@@ -96,7 +108,18 @@ func (h *AuthHandler) LoginHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	// Используем кастомный маршалер для сериализации ответа с пустыми полями
+	marshaler := protojson.MarshalOptions{
+		EmitUnpopulated: true,
+	}
+	jsonData, err := marshaler.Marshal(resp)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	// Отправляем сформированный JSON напрямую
+	c.Data(http.StatusOK, "application/json", jsonData)
 }
 
 func (h *AuthHandler) ValidateTokenHandler(c *gin.Context) {
@@ -135,5 +158,16 @@ func (h *AuthHandler) ValidateTokenHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	// Используем кастомный маршалер для сериализации ответа с пустыми полями
+	marshaler := protojson.MarshalOptions{
+		EmitUnpopulated: true,
+	}
+	jsonData, err := marshaler.Marshal(resp)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	// Отправляем сформированный JSON напрямую
+	c.Data(http.StatusOK, "application/json", jsonData)
 }

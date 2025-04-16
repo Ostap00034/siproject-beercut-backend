@@ -99,6 +99,8 @@ func (x *AuthorData) GetCreatedAt() string {
 
 type GetAllRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	PageNumber    int32                  `protobuf:"varint,1,opt,name=page_number,json=pageNumber,proto3" json:"page_number,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -133,9 +135,25 @@ func (*GetAllRequest) Descriptor() ([]byte, []int) {
 	return file_proto_author_proto_rawDescGZIP(), []int{1}
 }
 
+func (x *GetAllRequest) GetPageNumber() int32 {
+	if x != nil {
+		return x.PageNumber
+	}
+	return 0
+}
+
+func (x *GetAllRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 type GetAllResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Authors       []*AuthorData          `protobuf:"bytes,1,rep,name=authors,proto3" json:"authors,omitempty"`
+	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	TotalPages    int32                  `protobuf:"varint,3,opt,name=total_pages,json=totalPages,proto3" json:"total_pages,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -175,6 +193,20 @@ func (x *GetAllResponse) GetAuthors() []*AuthorData {
 		return x.Authors
 	}
 	return nil
+}
+
+func (x *GetAllResponse) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *GetAllResponse) GetTotalPages() int32 {
+	if x != nil {
+		return x.TotalPages
+	}
+	return 0
 }
 
 type GetAuthorRequest struct {
@@ -641,10 +673,16 @@ const file_proto_author_proto_rawDesc = "" +
 	"\rdate_of_birth\x18\x03 \x01(\tR\vdateOfBirth\x12\"\n" +
 	"\rdate_of_death\x18\x04 \x01(\tR\vdateOfDeath\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x05 \x01(\tR\tcreatedAt\"\x0f\n" +
-	"\rGetAllRequest\">\n" +
+	"created_at\x18\x05 \x01(\tR\tcreatedAt\"M\n" +
+	"\rGetAllRequest\x12\x1f\n" +
+	"\vpage_number\x18\x01 \x01(\x05R\n" +
+	"pageNumber\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\"u\n" +
 	"\x0eGetAllResponse\x12,\n" +
-	"\aauthors\x18\x01 \x03(\v2\x12.author.AuthorDataR\aauthors\"/\n" +
+	"\aauthors\x18\x01 \x03(\v2\x12.author.AuthorDataR\aauthors\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x1f\n" +
+	"\vtotal_pages\x18\x03 \x01(\x05R\n" +
+	"totalPages\"/\n" +
 	"\x10GetAuthorRequest\x12\x1b\n" +
 	"\tauthor_id\x18\x01 \x01(\tR\bauthorId\"?\n" +
 	"\x11GetAuthorResponse\x12*\n" +

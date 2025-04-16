@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package genre;
+
+option go_package = "github.com/Ostap00034/siproject-beercut-backend/genre-service/proto;genre";
+
+service GenreService {
+  rpc CreateGenre (CreateGenreRequest) returns (CreateGenreResponse);
+  rpc GetAll(GetAllRequest) returns (GetAllResponse);
+  rpc GetGenre(GetGenreRequest) returns (GetGenreResponse);
+  rpc UpdateGenre(UpdateGenreRequest) returns (UpdateGenreResponse);
+  rpc DeleteGenre(DeleteGenreRequest) returns (DeleteGenreResponse);
+}
+
+message GenreData {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string created_at = 4;
+}
+
+// Изменённый GetAllRequest с параметрами пагинации.
+message GetAllRequest {
+  int32 page_number = 1; // номер страницы, начиная с 1
+  int32 page_size = 2;  
+}
+
+// Изменённый GetAllResponse с общим количеством элементов.
+message GetAllResponse {
+  repeated GenreData genres = 1;
+  int32 total = 2;
+  int32 total_pages = 3;
+}
+
+message GetGenreRequest {
+  string genre_id = 1;
+}
+
+message GetGenreResponse {
+  GenreData genre = 1;
+}
+
+message CreateGenreRequest {
+  string name = 1;
+  string description = 2;
+}
+
+message CreateGenreResponse {
+  GenreData genre = 1;
+  string message = 2;
+}
+
+message UpdateGenreRequest {
+  string genre_id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message UpdateGenreResponse {
+  GenreData genre = 1;
+}
+
+message DeleteGenreRequest {
+  string genre_id = 1;
+}
+
+message DeleteGenreResponse {
+  string message = 1;
+}
+
+message ErrorResponse {
+  string message = 1;
+  map<string, string> errors = 2;
+}

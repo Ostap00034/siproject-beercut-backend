@@ -48,10 +48,15 @@ message UpdateUserResponse {
   UserData user = 1;
 }
 
-message GetAllUsersRequest {}
+message GetAllUsersRequest {
+  int32 page_number = 1;
+  int32 page_size = 2; 
+}
 
 message GetAllUsersResponse {
   repeated UserData users = 1;
+  int32 total = 2;
+  int32 total_pages = 3;
 }
 
 message GetUserByEmailRequest {

@@ -4,44 +4,12 @@ package auth;
 
 option go_package = "github.com/Ostap00034/siproject-beercut-backend/auth-service/proto;auth";
 
-import "google/api/annotations.proto";
-
 service AuthService {
-  // Регистрация нового пользователя
-  rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse) {
-    option (google.api.http) = {
-      post: "/v1/auth/register"
-      body: "*"
-    };
-  }
-  // Аутентификация (вход) по email и паролю
-  rpc Login(LoginRequest) returns (LoginResponse) {
-    option (google.api.http) = {
-      post: "/v1/auth/login"
-      body: "*"
-    };
-  }
-  // Создание токена (при необходимости)
-  rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse) {
-    option (google.api.http) = {
-      post: "/v1/auth/createToken"
-      body: "*"
-    };
-  }
-  // Валидация токена
-  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse) {
-    option (google.api.http) = {
-      post: "/v1/auth/validateToken"
-      body: "*"
-    };
-  }
-  // Удаление токена
-  rpc DeleteToken(DeleteTokenRequest) returns (DeleteTokenResponse) {
-    option (google.api.http) = {
-      post: "/v1/auth/deleteToken"
-      body: "*"
-    };
-  }
+  rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+  rpc DeleteToken(DeleteTokenRequest) returns (DeleteTokenResponse);
 }
 
 message RegisterUserRequest {
@@ -94,4 +62,9 @@ message DeleteTokenRequest {
 
 message DeleteTokenResponse {
   bool success = 1;
+}
+
+message ErrorResponse {
+  string message = 1;
+  map<string, string> errors = 2;
 }

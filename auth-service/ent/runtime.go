@@ -7,7 +7,6 @@ import (
 
 	"github.com/Ostap00034/siproject-beercut-backend/auth-service/ent/schema"
 	"github.com/Ostap00034/siproject-beercut-backend/auth-service/ent/token"
-	"github.com/Ostap00034/siproject-beercut-backend/auth-service/ent/user"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -20,10 +19,4 @@ func init() {
 	tokenDescCreatedAt := tokenFields[3].Descriptor()
 	// token.DefaultCreatedAt holds the default value on creation for the created_at field.
 	token.DefaultCreatedAt = tokenDescCreatedAt.Default.(func() time.Time)
-	userFields := schema.User{}.Fields()
-	_ = userFields
-	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[4].Descriptor()
-	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
-	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 }

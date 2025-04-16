@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package picture;
+
+option go_package = "github.com/Ostap00034/siproject-beercut-backend/picture-service/proto;picture";
+
+service PictureService {
+  rpc CreatePicture (CreatePictureRequest) returns (CreatePictureResponse);
+  rpc GetAll(GetAllRequest) returns (GetAllResponse);
+  rpc GetPicture(GetPictureRequest) returns (GetPictureResponse);
+  rpc UpdatePicture(UpdatePictureRequest) returns (UpdatePictureResponse);
+  rpc DeletePicture(DeletePictureRequest) returns (DeletePictureResponse);
+}
+
+message GenreData {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string created_at = 4;
+}
+
+message AuthorData {
+  string id = 1;
+  string full_name = 2;
+  string date_of_birth = 3;
+  string date_of_death = 4;
+  string created_at = 5;
+}
+
+
+message PictureData {
+  string id = 1;
+  string name = 2;
+  string date_of_painting = 3;
+  repeated string genres_ids = 4;
+  repeated string authors_ids = 5;
+  repeated AuthorData authors = 6;
+  repeated GenreData genres = 7;
+  string exhibition_id = 8;
+  double cost = 9;
+  string location = 10;
+  string created_at = 11;
+}
+
+message GetAllRequest {
+  int32 page_number = 1; // номер страницы, начиная с 1
+  int32 page_size = 2;
+}
+
+message GetAllResponse {
+  repeated PictureData pictures = 1;
+  int32 total = 2;
+  int32 total_pages = 3;
+}
+
+message GetPictureRequest {
+  string picture_id = 1;
+}
+
+message GetPictureResponse {
+  PictureData picture = 1;
+}
+
+message CreatePictureRequest {
+  string name = 1;
+  string date_of_painting = 2;
+  repeated string authors_ids = 3;
+  repeated string genres_ids = 4;
+  string exhibition_id = 5;
+  double cost = 6;
+  string location = 7;
+}
+
+message CreatePictureResponse {
+  PictureData picture = 1;
+  string message = 2;
+}
+
+message UpdatePictureRequest {
+  string picture_id = 1;
+  string name = 2;
+  string date_of_painting = 3;
+  repeated string authors_ids = 4;
+  repeated string genres_ids = 5;
+  string exhibition_id = 6;
+  double cost = 7;
+  string location = 8;
+  string user_id = 9;
+}
+
+message UpdatePictureResponse {
+  PictureData picture = 1;
+}
+
+message DeletePictureRequest {
+  string picture_id = 1;
+}
+
+message DeletePictureResponse {
+  string message = 1;
+}
+
+message ErrorResponse {
+  string message = 1;
+  map<string, string> errors = 2;
+}

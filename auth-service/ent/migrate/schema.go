@@ -12,47 +12,21 @@ var (
 	TokensColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "token", Type: field.TypeString, Unique: true},
-		{Name: "role", Type: field.TypeString},
+		{Name: "user_id", Type: field.TypeString},
 		{Name: "expires_at", Type: field.TypeTime},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "user_tokens", Type: field.TypeInt},
 	}
 	// TokensTable holds the schema information for the "tokens" table.
 	TokensTable = &schema.Table{
 		Name:       "tokens",
 		Columns:    TokensColumns,
 		PrimaryKey: []*schema.Column{TokensColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "tokens_users_tokens",
-				Columns:    []*schema.Column{TokensColumns[5]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-	}
-	// UsersColumns holds the columns for the "users" table.
-	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "email", Type: field.TypeString, Unique: true},
-		{Name: "password_hash", Type: field.TypeString},
-		{Name: "full_name", Type: field.TypeString},
-		{Name: "role", Type: field.TypeEnum, Enums: []string{"DIRECTOR", "ADMIN", "RESTORER", "EMPLOYEE"}, Default: "EMPLOYEE"},
-		{Name: "created_at", Type: field.TypeTime},
-	}
-	// UsersTable holds the schema information for the "users" table.
-	UsersTable = &schema.Table{
-		Name:       "users",
-		Columns:    UsersColumns,
-		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		TokensTable,
-		UsersTable,
 	}
 )
 
 func init() {
-	TokensTable.ForeignKeys[0].RefTable = UsersTable
 }

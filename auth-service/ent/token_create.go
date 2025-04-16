@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/Ostap00034/siproject-beercut-backend/auth-service/ent/token"
-	"github.com/Ostap00034/siproject-beercut-backend/auth-service/ent/user"
 )
 
 // TokenCreate is the builder for creating a Token entity.
@@ -27,9 +26,9 @@ func (tc *TokenCreate) SetToken(s string) *TokenCreate {
 	return tc
 }
 
-// SetRole sets the "role" field.
-func (tc *TokenCreate) SetRole(s string) *TokenCreate {
-	tc.mutation.SetRole(s)
+// SetUserID sets the "user_id" field.
+func (tc *TokenCreate) SetUserID(s string) *TokenCreate {
+	tc.mutation.SetUserID(s)
 	return tc
 }
 
@@ -51,17 +50,6 @@ func (tc *TokenCreate) SetNillableCreatedAt(t *time.Time) *TokenCreate {
 		tc.SetCreatedAt(*t)
 	}
 	return tc
-}
-
-// SetUserID sets the "user" edge to the User entity by ID.
-func (tc *TokenCreate) SetUserID(id int) *TokenCreate {
-	tc.mutation.SetUserID(id)
-	return tc
-}
-
-// SetUser sets the "user" edge to the User entity.
-func (tc *TokenCreate) SetUser(u *User) *TokenCreate {
-	return tc.SetUserID(u.ID)
 }
 
 // Mutation returns the TokenMutation object of the builder.
@@ -110,17 +98,14 @@ func (tc *TokenCreate) check() error {
 	if _, ok := tc.mutation.Token(); !ok {
 		return &ValidationError{Name: "token", err: errors.New(`ent: missing required field "Token.token"`)}
 	}
-	if _, ok := tc.mutation.Role(); !ok {
-		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "Token.role"`)}
+	if _, ok := tc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Token.user_id"`)}
 	}
 	if _, ok := tc.mutation.ExpiresAt(); !ok {
 		return &ValidationError{Name: "expires_at", err: errors.New(`ent: missing required field "Token.expires_at"`)}
 	}
 	if _, ok := tc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Token.created_at"`)}
-	}
-	if len(tc.mutation.UserIDs()) == 0 {
-		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Token.user"`)}
 	}
 	return nil
 }
@@ -152,9 +137,9 @@ func (tc *TokenCreate) createSpec() (*Token, *sqlgraph.CreateSpec) {
 		_spec.SetField(token.FieldToken, field.TypeString, value)
 		_node.Token = value
 	}
-	if value, ok := tc.mutation.Role(); ok {
-		_spec.SetField(token.FieldRole, field.TypeString, value)
-		_node.Role = value
+	if value, ok := tc.mutation.UserID(); ok {
+		_spec.SetField(token.FieldUserID, field.TypeString, value)
+		_node.UserID = value
 	}
 	if value, ok := tc.mutation.ExpiresAt(); ok {
 		_spec.SetField(token.FieldExpiresAt, field.TypeTime, value)
@@ -163,23 +148,6 @@ func (tc *TokenCreate) createSpec() (*Token, *sqlgraph.CreateSpec) {
 	if value, ok := tc.mutation.CreatedAt(); ok {
 		_spec.SetField(token.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
-	}
-	if nodes := tc.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   token.UserTable,
-			Columns: []string{token.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.user_tokens = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

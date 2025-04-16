@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Ostap00034/siproject-beercut-backend/auth-service/ent/predicate"
 )
 
@@ -60,9 +59,9 @@ func Token(v string) predicate.Token {
 	return predicate.Token(sql.FieldEQ(FieldToken, v))
 }
 
-// Role applies equality check predicate on the "role" field. It's identical to RoleEQ.
-func Role(v string) predicate.Token {
-	return predicate.Token(sql.FieldEQ(FieldRole, v))
+// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
+func UserID(v string) predicate.Token {
+	return predicate.Token(sql.FieldEQ(FieldUserID, v))
 }
 
 // ExpiresAt applies equality check predicate on the "expires_at" field. It's identical to ExpiresAtEQ.
@@ -140,69 +139,69 @@ func TokenContainsFold(v string) predicate.Token {
 	return predicate.Token(sql.FieldContainsFold(FieldToken, v))
 }
 
-// RoleEQ applies the EQ predicate on the "role" field.
-func RoleEQ(v string) predicate.Token {
-	return predicate.Token(sql.FieldEQ(FieldRole, v))
+// UserIDEQ applies the EQ predicate on the "user_id" field.
+func UserIDEQ(v string) predicate.Token {
+	return predicate.Token(sql.FieldEQ(FieldUserID, v))
 }
 
-// RoleNEQ applies the NEQ predicate on the "role" field.
-func RoleNEQ(v string) predicate.Token {
-	return predicate.Token(sql.FieldNEQ(FieldRole, v))
+// UserIDNEQ applies the NEQ predicate on the "user_id" field.
+func UserIDNEQ(v string) predicate.Token {
+	return predicate.Token(sql.FieldNEQ(FieldUserID, v))
 }
 
-// RoleIn applies the In predicate on the "role" field.
-func RoleIn(vs ...string) predicate.Token {
-	return predicate.Token(sql.FieldIn(FieldRole, vs...))
+// UserIDIn applies the In predicate on the "user_id" field.
+func UserIDIn(vs ...string) predicate.Token {
+	return predicate.Token(sql.FieldIn(FieldUserID, vs...))
 }
 
-// RoleNotIn applies the NotIn predicate on the "role" field.
-func RoleNotIn(vs ...string) predicate.Token {
-	return predicate.Token(sql.FieldNotIn(FieldRole, vs...))
+// UserIDNotIn applies the NotIn predicate on the "user_id" field.
+func UserIDNotIn(vs ...string) predicate.Token {
+	return predicate.Token(sql.FieldNotIn(FieldUserID, vs...))
 }
 
-// RoleGT applies the GT predicate on the "role" field.
-func RoleGT(v string) predicate.Token {
-	return predicate.Token(sql.FieldGT(FieldRole, v))
+// UserIDGT applies the GT predicate on the "user_id" field.
+func UserIDGT(v string) predicate.Token {
+	return predicate.Token(sql.FieldGT(FieldUserID, v))
 }
 
-// RoleGTE applies the GTE predicate on the "role" field.
-func RoleGTE(v string) predicate.Token {
-	return predicate.Token(sql.FieldGTE(FieldRole, v))
+// UserIDGTE applies the GTE predicate on the "user_id" field.
+func UserIDGTE(v string) predicate.Token {
+	return predicate.Token(sql.FieldGTE(FieldUserID, v))
 }
 
-// RoleLT applies the LT predicate on the "role" field.
-func RoleLT(v string) predicate.Token {
-	return predicate.Token(sql.FieldLT(FieldRole, v))
+// UserIDLT applies the LT predicate on the "user_id" field.
+func UserIDLT(v string) predicate.Token {
+	return predicate.Token(sql.FieldLT(FieldUserID, v))
 }
 
-// RoleLTE applies the LTE predicate on the "role" field.
-func RoleLTE(v string) predicate.Token {
-	return predicate.Token(sql.FieldLTE(FieldRole, v))
+// UserIDLTE applies the LTE predicate on the "user_id" field.
+func UserIDLTE(v string) predicate.Token {
+	return predicate.Token(sql.FieldLTE(FieldUserID, v))
 }
 
-// RoleContains applies the Contains predicate on the "role" field.
-func RoleContains(v string) predicate.Token {
-	return predicate.Token(sql.FieldContains(FieldRole, v))
+// UserIDContains applies the Contains predicate on the "user_id" field.
+func UserIDContains(v string) predicate.Token {
+	return predicate.Token(sql.FieldContains(FieldUserID, v))
 }
 
-// RoleHasPrefix applies the HasPrefix predicate on the "role" field.
-func RoleHasPrefix(v string) predicate.Token {
-	return predicate.Token(sql.FieldHasPrefix(FieldRole, v))
+// UserIDHasPrefix applies the HasPrefix predicate on the "user_id" field.
+func UserIDHasPrefix(v string) predicate.Token {
+	return predicate.Token(sql.FieldHasPrefix(FieldUserID, v))
 }
 
-// RoleHasSuffix applies the HasSuffix predicate on the "role" field.
-func RoleHasSuffix(v string) predicate.Token {
-	return predicate.Token(sql.FieldHasSuffix(FieldRole, v))
+// UserIDHasSuffix applies the HasSuffix predicate on the "user_id" field.
+func UserIDHasSuffix(v string) predicate.Token {
+	return predicate.Token(sql.FieldHasSuffix(FieldUserID, v))
 }
 
-// RoleEqualFold applies the EqualFold predicate on the "role" field.
-func RoleEqualFold(v string) predicate.Token {
-	return predicate.Token(sql.FieldEqualFold(FieldRole, v))
+// UserIDEqualFold applies the EqualFold predicate on the "user_id" field.
+func UserIDEqualFold(v string) predicate.Token {
+	return predicate.Token(sql.FieldEqualFold(FieldUserID, v))
 }
 
-// RoleContainsFold applies the ContainsFold predicate on the "role" field.
-func RoleContainsFold(v string) predicate.Token {
-	return predicate.Token(sql.FieldContainsFold(FieldRole, v))
+// UserIDContainsFold applies the ContainsFold predicate on the "user_id" field.
+func UserIDContainsFold(v string) predicate.Token {
+	return predicate.Token(sql.FieldContainsFold(FieldUserID, v))
 }
 
 // ExpiresAtEQ applies the EQ predicate on the "expires_at" field.
@@ -283,29 +282,6 @@ func CreatedAtLT(v time.Time) predicate.Token {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Token {
 	return predicate.Token(sql.FieldLTE(FieldCreatedAt, v))
-}
-
-// HasUser applies the HasEdge predicate on the "user" edge.
-func HasUser() predicate.Token {
-	return predicate.Token(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasUserWith applies the HasEdge predicate on the "user" edge with a given conditions (other predicates).
-func HasUserWith(preds ...predicate.User) predicate.Token {
-	return predicate.Token(func(s *sql.Selector) {
-		step := newUserStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
 }
 
 // And groups predicates with the AND operator between them.

@@ -343,6 +343,8 @@ func (x *UpdateUserResponse) GetUser() *UserData {
 
 type GetAllUsersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	PageNumber    int32                  `protobuf:"varint,1,opt,name=page_number,json=pageNumber,proto3" json:"page_number,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -377,9 +379,25 @@ func (*GetAllUsersRequest) Descriptor() ([]byte, []int) {
 	return file_proto_user_proto_rawDescGZIP(), []int{6}
 }
 
+func (x *GetAllUsersRequest) GetPageNumber() int32 {
+	if x != nil {
+		return x.PageNumber
+	}
+	return 0
+}
+
+func (x *GetAllUsersRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 type GetAllUsersResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Users         []*UserData            `protobuf:"bytes,1,rep,name=users,proto3" json:"users,omitempty"`
+	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	TotalPages    int32                  `protobuf:"varint,3,opt,name=total_pages,json=totalPages,proto3" json:"total_pages,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -419,6 +437,20 @@ func (x *GetAllUsersResponse) GetUsers() []*UserData {
 		return x.Users
 	}
 	return nil
+}
+
+func (x *GetAllUsersResponse) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *GetAllUsersResponse) GetTotalPages() int32 {
+	if x != nil {
+		return x.TotalPages
+	}
+	return 0
 }
 
 type GetUserByEmailRequest struct {
@@ -616,10 +648,16 @@ const file_proto_user_proto_rawDesc = "" +
 	"\x04role\x18\x04 \x01(\tR\x04role\x12\x1a\n" +
 	"\bpassword\x18\x05 \x01(\tR\bpassword\"8\n" +
 	"\x12UpdateUserResponse\x12\"\n" +
-	"\x04user\x18\x01 \x01(\v2\x0e.user.UserDataR\x04user\"\x14\n" +
-	"\x12GetAllUsersRequest\";\n" +
+	"\x04user\x18\x01 \x01(\v2\x0e.user.UserDataR\x04user\"R\n" +
+	"\x12GetAllUsersRequest\x12\x1f\n" +
+	"\vpage_number\x18\x01 \x01(\x05R\n" +
+	"pageNumber\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\"r\n" +
 	"\x13GetAllUsersResponse\x12$\n" +
-	"\x05users\x18\x01 \x03(\v2\x0e.user.UserDataR\x05users\"-\n" +
+	"\x05users\x18\x01 \x03(\v2\x0e.user.UserDataR\x05users\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x1f\n" +
+	"\vtotal_pages\x18\x03 \x01(\x05R\n" +
+	"totalPages\"-\n" +
 	"\x15GetUserByEmailRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\"\x86\x01\n" +
 	"\bUserData\x12\x0e\n" +

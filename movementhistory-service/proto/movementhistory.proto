@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package movementhistory;
+
+option go_package = "github.com/Ostap00034/siproject-beercut-backend/movementhistory-service/proto;movementhistory";
+
+service MovementHistoryService {
+  rpc CreateMovementHistory (CreateMovementHistoryRequest) returns (CreateMovementHistoryResponse);
+  rpc GetAll(GetAllRequest) returns (GetAllResponse);
+  rpc GetMovementHistory(GetMovementHistoryRequest) returns (GetMovementHistoryResponse);
+  rpc GetMovementHistorysByPictureId(GetMovementHistorysByPictureIdRequest) returns (GetMovementHistorysByPictureIdResponse);
+  rpc DeleteMovementHistory(DeleteMovementHistoryRequest) returns (DeleteMovementHistoryResponse);
+}
+
+message MovementHistoryData {
+  string id = 1;
+  string user_id = 2;
+  string picture_id = 3;
+  string from = 4;
+  string to = 5;
+  string created_at = 6;
+}
+
+// Изменённый GetAllRequest с параметрами пагинации.
+message GetAllRequest {
+  int32 page_number = 1; // номер страницы, начиная с 1
+  int32 page_size = 2;  
+}
+
+// Изменённый GetAllResponse с общим количеством элементов.
+message GetAllResponse {
+  repeated MovementHistoryData movementhistorys = 1;
+  int32 total = 2;
+  int32 total_pages = 3;
+}
+
+message GetMovementHistoryRequest {
+  string movementhistory_id = 1;
+}
+
+message GetMovementHistoryResponse {
+  MovementHistoryData movementhistory = 1;
+}
+
+message GetMovementHistorysByPictureIdRequest {
+  string picture_id = 1;
+  int32 page_number = 2;
+  int32 page_size = 3;  
+}
+
+message GetMovementHistorysByPictureIdResponse {
+  repeated MovementHistoryData movementhistorys = 1;
+  int32 total = 2;
+  int32 total_pages = 3;
+}
+
+message CreateMovementHistoryRequest {
+  string user_id = 1;
+  string picture_id = 2;
+  string from = 3;
+  string to = 4;
+}
+
+message CreateMovementHistoryResponse {
+  MovementHistoryData movementhistory = 1;
+  string message = 2;
+}
+
+message DeleteMovementHistoryRequest {
+  string movementhistory_id = 1;
+}
+
+message DeleteMovementHistoryResponse {
+  string message = 1;
+}
+
+message ErrorResponse {
+  string message = 1;
+  map<string, string> errors = 2;
+}

@@ -5,7 +5,7 @@ use (
 	./author-service
 	./exhibition-service
 	./genre-service
-	./movement-history-service
+	./movementhistory-service
 	./picture-service
 	./user-service
 	./api-gateway

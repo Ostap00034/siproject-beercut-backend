@@ -164,7 +164,26 @@ func (s *userServer) UpdateUser(ctx context.Context, req *userpb.UpdateUserReque
 
 // GetAllUsers возвращает список всех пользователей.
 func (s *userServer) GetAllUsers(ctx context.Context, req *userpb.GetAllUsersRequest) (*userpb.GetAllUsersResponse, error) {
-	users, err := s.db.User.Query().All(ctx)
+	// Получаем пагинационные параметры. Если они не заданы, используем значения по умолчанию.
+	pageNumber := req.GetPageNumber()
+	pageSize := req.GetPageSize()
+	if pageNumber <= 0 {
+		pageNumber = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10 // значение по умолчанию
+	}
+	offset := (pageNumber - 1) * pageSize
+
+	total, err := s.db.User.Query().Count(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Ошибка получения общего количества жанров: %v", err)
+	}
+
+	// Вычисляем количество страниц (округляем в большую сторону).
+	totalPages := (total + int(pageSize) - 1) / int(pageSize)
+
+	users, err := s.db.User.Query().Offset(int(offset)).Limit(int(pageSize)).All(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Ошибка получения списка пользователей: %v", err)
 	}
@@ -182,5 +201,7 @@ func (s *userServer) GetAllUsers(ctx context.Context, req *userpb.GetAllUsersReq
 
 	return &userpb.GetAllUsersResponse{
 		Users: userList,
+		Total:       int32(total),
+		TotalPages:  int32(totalPages),
 	}, nil
 }
