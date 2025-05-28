@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"net/http"
-	"strings"
 	"time"
 
 	authpb "github.com/Ostap00034/siproject-beercut-backend/auth-service/proto"
@@ -13,8 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// AuthClientHolder содержит глобальный gRPC-клиент для Auth Service,
-// который используется для валидации токенов.
+// AuthClientHolder содержит глобальный gRPC-клиент для Auth Service.
 var AuthClient authpb.AuthServiceClient
 
 // InitAuthClient инициализирует gRPC-клиента для Auth Service.
@@ -24,34 +22,33 @@ func InitAuthClient(addr string) {
 	if err != nil {
 		panic("Ошибка подключения к Auth Service: " + err.Error())
 	}
-	// Можно сохранить соединение в глобальную переменную, если это необходимо.
 	AuthClient = authpb.NewAuthServiceClient(conn)
 }
 
-// AdminMiddleware проверяет, что в заголовке Authorization передан токен типа "Bearer <token>",
-// и что этот токен валиден и принадлежит пользователю с ролью ADMIN.
-// Если проверка не проходит, запрос прерывается с соответствующим HTTP статусом.
+// tokenFromCookie пытается получить токен из куки "sso".
+func tokenFromCookie(c *gin.Context) (string, error) {
+	token, err := c.Cookie("sso")
+	if err != nil {
+		return "", err
+	}
+	return token, nil
+}
+
+// AdminMiddleware проверяет, что в куке "sso" лежит валидный токен с ролью ADMIN.
 func AdminMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Извлекаем заголовок Authorization.
-		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Отсутствует токен авторизации"})
+		// Получаем токен из куки
+		tokenStr, err := tokenFromCookie(c)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Отсутствует или недействительная кука sso"})
 			return
 		}
 
-		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Неверный формат токена"})
-			return
-		}
-		tokenStr := parts[1]
-
-		// Создаем контекст с таймаутом для проверки токена.
+		// Контекст с таймаутом для проверки токена
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
-		// Вызываем метод ValidateToken через gRPC Auth Service.
+		// Валидация токена через gRPC
 		validateReq := &authpb.ValidateTokenRequest{Token: tokenStr}
 		resp, err := AuthClient.ValidateToken(ctx, validateReq)
 		if err != nil || !resp.GetValid() {
@@ -60,13 +57,13 @@ func AdminMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Проверяем, что роль пользователя равна "ADMIN".
+		// Проверяем роль
 		if resp.GetRole() != "ADMIN" {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"message": "Доступ запрещён: требуется роль ADMIN"})
 			return
 		}
 
-		// Если проверка пройдена, можно сохранить информацию в контексте для дальнейшего использования.
+		// Сохраняем данные пользователя в контекст
 		c.Set("user_id", resp.GetUserId())
 		c.Set("caller_role", resp.GetRole())
 
@@ -74,27 +71,21 @@ func AdminMiddleware() gin.HandlerFunc {
 	}
 }
 
+// EmployeeMiddleware проверяет, что в куке "sso" лежит валидный токен с ролью EMPLOYEE или ADMIN.
 func EmployeeMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Извлекаем заголовок Authorization.
-		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Отсутствует токен авторизации"})
+		// Получаем токен из куки
+		tokenStr, err := tokenFromCookie(c)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Отсутствует или недействительная кука sso"})
 			return
 		}
 
-		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Неверный формат токена"})
-			return
-		}
-		tokenStr := parts[1]
-
-		// Создаем контекст с таймаутом для проверки токена.
+		// Контекст с таймаутом для проверки токена
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
-		// Вызываем метод ValidateToken через gRPC Auth Service.
+		// Валидация токена через gRPC
 		validateReq := &authpb.ValidateTokenRequest{Token: tokenStr}
 		resp, err := AuthClient.ValidateToken(ctx, validateReq)
 		if err != nil || !resp.GetValid() {
@@ -103,15 +94,16 @@ func EmployeeMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Проверяем, что роль пользователя равна "ADMIN".
-		if resp.GetRole() != "EMPLOYEE" && resp.GetRole() != "ADMIN" {
+		// Проверяем роль
+		role := resp.GetRole()
+		if role != "EMPLOYEE" && role != "ADMIN" {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"message": "Доступ запрещён: требуется роль EMPLOYEE"})
 			return
 		}
 
-		// Если проверка пройдена, можно сохранить информацию в контексте для дальнейшего использования.
+		// Сохраняем данные пользователя в контекст
 		c.Set("user_id", resp.GetUserId())
-		c.Set("caller_role", resp.GetRole())
+		c.Set("caller_role", role)
 
 		c.Next()
 	}
