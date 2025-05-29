@@ -85,8 +85,8 @@ func main() {
 	// Подключаем CORS middleware для разрешения запросов с localhost:5173
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "Cookie", "Set-Cookie", "Access-Control-Allow-Origin"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -122,7 +122,7 @@ func main() {
 		{
 			employeeGroup.POST("/genres/", genreHandler.CreateGenreHandler)
 			employeeGroup.PUT("/genres/:genre_id", genreHandler.UpdateGenreHandler)
-			employeeGroup.GET("/genres/", genreHandler.GetAllGenresHandler)
+			employeeGroup.GET("/genres", genreHandler.GetAllGenresHandler)
 			employeeGroup.GET("/genres/:genre_id", genreHandler.GetGenreHandler)
 
 			employeeGroup.GET("/authors/", authorHandler.GetAllAuthorsHandler)
